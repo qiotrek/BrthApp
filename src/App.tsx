@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Clock, CheckCircle, Circle, Calendar } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { CheckCircle, Circle } from 'lucide-react';
 
 interface Task {
   id: number;
@@ -10,12 +10,13 @@ interface Task {
   visible: boolean;
 }
 
+
 const initialTasks: Task[] = [
-  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '07:00', completed: false, visible: false },
-  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '09:00', completed: false, visible: false },
-  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '10:30', completed: false, visible: false },
-  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '12:30', completed: false, visible: false },
-  { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '14:00', completed: false, visible: false },
+  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '00:00', completed: false, visible: false },
+  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '01:00', completed: false, visible: false },
+  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '01:30', completed: false, visible: false },
+  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '02:00', completed: false, visible: false },
+  { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '02:10', completed: false, visible: false },
   { id: 6, title: 'Przegląd dnia', description: 'Podsumowanie wykonanych zadań i planowanie na jutro', time: '17:00', completed: false, visible: false },
   { id: 7, title: 'Czas na relaks', description: 'Moment na odpoczynek i hobby', time: '19:00', completed: false, visible: false },
 ];
@@ -31,13 +32,20 @@ const isVisible = (taskTime: string, currentTime: string): boolean => {
 export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTime, setCurrentTime] = useState<string>(getCurrentTime());
+  const [showModal, setShowModal] = useState<boolean>(false);
 
+  // Check first visit
   useEffect(() => {
+    const visited = localStorage.getItem('hasVisited');
+    if (!visited) {
+      setShowModal(true);
+    }
     const saved = localStorage.getItem('completedTasks');
     const completedIds: number[] = saved ? JSON.parse(saved) : [];
     setTasks(initialTasks.map(t => ({ ...t, completed: completedIds.includes(t.id), visible: false })));
   }, []);
 
+  // Update time and visibility
   useEffect(() => {
     const update = () => {
       const now = getCurrentTime();
@@ -57,6 +65,11 @@ export default function App() {
     });
   };
 
+  const handleStart = () => {
+    localStorage.setItem('hasVisited', 'true');
+    setShowModal(false);
+  };
+
   const visibleTasks = tasks.filter(t => t.visible && !t.completed);
   const completedTasks = tasks.filter(t => t.visible && t.completed);
   const completedCount = completedTasks.length;
@@ -64,7 +77,24 @@ export default function App() {
   const percent = totalVisible ? (completedCount / totalVisible) * 100 : 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-tr from-indigo-200 via-purple-200 to-pink-200 p-6">
+    <div className="relative min-h-screen bg-gradient-to-tr from-indigo-200 via-purple-200 to-pink-200 p-6">
+      {/* Welcome Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg">
+            <h2 className="text-2xl font-bold text-purple-800 mb-4">Witamy!</h2>
+            <p className="text-purple-700 mb-6">WIADOMOSC WSTEPNE. Zaczynamy?</p>
+            <button
+              onClick={handleStart}
+              className="inline-flex items-center gap-2 border-2 border-green-500 rounded-full px-6 py-2 hover:bg-green-50 transition"
+            >
+              <CheckCircle className="w-5 h-5 text-green-500" />
+              <span className="text-green-600 font-semibold">Zaczynamy</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="max-w-3xl mx-auto">
         <header className="mb-8">
           <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl py-6 px-8 flex justify-between items-center border border-purple-300">

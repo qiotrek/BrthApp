@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Clock, CheckCircle, Circle, Calendar } from 'lucide-react';
 
 interface Task {
@@ -11,18 +11,18 @@ interface Task {
 }
 
 const initialTasks: Task[] = [
-  { id: 1, title: 'Poranna kawa',     description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '01:00', completed: false, visible: false },
-  { id: 2, title: 'Przegląd emaili',   description: 'Sprawdzenie i odpowiedź na ważne emaile',           time: '01:30', completed: false, visible: false },
-  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym',    time: '10:30', completed: false, visible: false },
-  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer',            time: '12:30', completed: false, visible: false },
+  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '01:00', completed: false, visible: false },
+  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '01:30', completed: false, visible: false },
+  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '2:10', completed: false, visible: false },
+  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '12:30', completed: false, visible: false },
   { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '14:00', completed: false, visible: false },
-  { id: 6, title: 'Przegląd dnia',     description: 'Podsumowanie wykonanych zadań i planowanie na jutro', time: '17:00', completed: false, visible: false },
-  { id: 7, title: 'Czas na relaks',    description: 'Moment na odpoczynek i hobby',                      time: '19:00', completed: false, visible: false },
+  { id: 6, title: 'Przegląd dnia', description: 'Podsumowanie wykonanych zadań i planowanie na jutro', time: '17:00', completed: false, visible: false },
+  { id: 7, title: 'Czas na relaks', description: 'Moment na odpoczynek i hobby', time: '19:00', completed: false, visible: false },
 ];
 
 const getCurrentTime = (): string => {
   const now = new Date();
-  return now.toTimeString().slice(0,5);
+  return now.toTimeString().slice(0, 5);
 };
 
 const isVisible = (taskTime: string, currentTime: string): boolean => {
@@ -32,22 +32,43 @@ const isVisible = (taskTime: string, currentTime: string): boolean => {
 };
 
 export default function App() {
-  const [tasks, setTasks] = useState<Task[]>(initialTasks);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTime, setCurrentTime] = useState<string>(getCurrentTime());
 
+  // Load tasks and completed from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('completedTasks');
+    const completedIds: number[] = saved ? JSON.parse(saved) : [];
+    const loaded = initialTasks.map(t => ({
+      ...t,
+      completed: completedIds.includes(t.id),
+      visible: false,
+    }));
+    setTasks(loaded);
+  }, []);
+
+  // Update visibility each minute
   useEffect(() => {
     const update = () => {
       const now = getCurrentTime();
       setCurrentTime(now);
-      setTasks((prev) => prev.map(t => ({ ...t, visible: isVisible(t.time, now) })));
+      setTasks(prev => prev.map(t => ({ ...t, visible: isVisible(t.time, now) })));
     };
     update();
-    const id = setInterval(update, 60000);
-    return () => clearInterval(id);
+    const timer = setInterval(update, 60000);
+    return () => clearInterval(timer);
   }, []);
 
+  // Toggle and save directly
   const toggle = (id: number) => {
-    setTasks(prev => prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t));
+    setTasks(prev => {
+      const updated = prev.map(t =>
+        t.id === id ? { ...t, completed: !t.completed } : t
+      );
+      const completedIds = updated.filter(t => t.completed).map(t => t.id);
+      localStorage.setItem('completedTasks', JSON.stringify(completedIds));
+      return updated;
+    });
   };
 
   const visibleTasks = tasks.filter(t => t.visible);
@@ -99,7 +120,7 @@ export default function App() {
             visibleTasks.map((task, idx) => (
               <div
                 key={task.id}
-                className={`bg-white rounded-2xl shadow-lg p-6 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${task.completed ? 'opacity-75' : ''}   animate-slideInUp`}
+                className={`bg-white rounded-2xl shadow-lg p-6 transform transition-all duration-500 hover:shadow-xl hover:-translate-y-1 ${task.completed ? 'opacity-75' : ''} animate-slideInUp`}
                 style={{ animationDelay: `${idx * 100}ms` }}
               >
                 <div className="flex items-start gap-4">

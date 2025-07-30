@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, CheckCircle, Circle, Calendar } from 'lucide-react';
 
 interface Task {
@@ -11,19 +11,16 @@ interface Task {
 }
 
 const initialTasks: Task[] = [
-  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '01:00', completed: false, visible: false },
-  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '01:30', completed: false, visible: false },
-  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '02:10', completed: false, visible: false },
-  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '02:20', completed: false, visible: false },
-  { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '02:24', completed: false, visible: false },
+  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '07:00', completed: false, visible: false },
+  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '09:00', completed: false, visible: false },
+  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '10:30', completed: false, visible: false },
+  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '12:30', completed: false, visible: false },
+  { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '14:00', completed: false, visible: false },
   { id: 6, title: 'Przegląd dnia', description: 'Podsumowanie wykonanych zadań i planowanie na jutro', time: '17:00', completed: false, visible: false },
   { id: 7, title: 'Czas na relaks', description: 'Moment na odpoczynek i hobby', time: '19:00', completed: false, visible: false },
 ];
 
-const getCurrentTime = (): string => {
-  const now = new Date();
-  return now.toTimeString().slice(0, 5);
-};
+const getCurrentTime = (): string => new Date().toTimeString().slice(0, 5);
 
 const isVisible = (taskTime: string, currentTime: string): boolean => {
   const [h1, m1] = taskTime.split(':').map(Number);
@@ -35,19 +32,12 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTime, setCurrentTime] = useState<string>(getCurrentTime());
 
-  // Load tasks and completed from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem('completedTasks');
     const completedIds: number[] = saved ? JSON.parse(saved) : [];
-    const loaded = initialTasks.map(t => ({
-      ...t,
-      completed: completedIds.includes(t.id),
-      visible: false,
-    }));
-    setTasks(loaded);
+    setTasks(initialTasks.map(t => ({ ...t, completed: completedIds.includes(t.id), visible: false })));
   }, []);
 
-  // Update visibility each minute
   useEffect(() => {
     const update = () => {
       const now = getCurrentTime();
@@ -59,28 +49,26 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  // Toggle and save directly
   const toggle = (id: number) => {
     setTasks(prev => {
-      const updated = prev.map(t =>
-        t.id === id ? { ...t, completed: !t.completed } : t
-      );
-      const completedIds = updated.filter(t => t.completed).map(t => t.id);
-      localStorage.setItem('completedTasks', JSON.stringify(completedIds));
+      const updated = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+      localStorage.setItem('completedTasks', JSON.stringify(updated.filter(t => t.completed).map(t => t.id)));
       return updated;
     });
   };
 
-  const visibleTasks = tasks.filter(t => t.visible);
-  const completedCount = visibleTasks.filter(t => t.completed).length;
-  const percent = visibleTasks.length ? (completedCount / visibleTasks.length) * 100 : 0;
+  const visibleTasks = tasks.filter(t => t.visible && !t.completed);
+  const completedTasks = tasks.filter(t => t.visible && t.completed);
+  const completedCount = completedTasks.length;
+  const totalVisible = visibleTasks.length + completedTasks.length;
+  const percent = totalVisible ? (completedCount / totalVisible) * 100 : 0;
 
   return (
     <div className="min-h-screen bg-gradient-to-tr from-indigo-200 via-purple-200 to-pink-200 p-6">
       <div className="max-w-3xl mx-auto">
         <header className="mb-8">
           <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl py-6 px-8 flex justify-between items-center border border-purple-300">
-            <h1 className="text-3xl font-extrabold text-purple-800 flex items-center gap-4">
+            <h1 className="text-2xl font-extrabold text-purple-800 flex items-center gap-4">
               Lista Zadań
             </h1>
             <div className="flex items-center gap-3">
@@ -91,7 +79,7 @@ export default function App() {
             </div>
           </div>
           <div className="mt-6 flex items-center gap-6 text-purple-700">
-            <span>Dostępne: <strong className="text-pink-600">{visibleTasks.length}</strong></span>
+            <span>Oczekujące: <strong className="text-pink-600">{visibleTasks.length}</strong></span>
             <span>Ukończone: <strong className="text-indigo-600">{completedCount}</strong></span>
             <div className="flex-1">
               <div className="w-full bg-pink-100 rounded-full h-3 overflow-hidden">
@@ -104,32 +92,59 @@ export default function App() {
           </div>
         </header>
 
-        <main className="space-y-6">
-          {visibleTasks.length === 0 ? (
-            <div className="bg-white/90 rounded-3xl shadow-lg p-12 text-center border border-purple-100">
-              <Clock className="w-24 h-24 text-purple-300 mx-auto mb-6" />
-              <h2 className="text-2xl font-semibold text-purple-700 mb-3">Brak zadań</h2>
-              <p className="text-purple-500">Zadania pojawią się o odpowiedniej godzinie</p>
-            </div>
-          ) : (
-            visibleTasks.map((task, idx) => (
-              <div
-                key={task.id}
-                className={`relative bg-white rounded-2xl shadow-lg p-6 flex gap-4 items-start transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl ${task.completed ? 'opacity-70 grayscale' : ''}`}
-                style={{ animation: `fadeIn 0.5s ease-out`, animationDelay: `${idx * 150}ms` }}
-              >
-                <button onClick={() => toggle(task.id)} className="mt-1">
-                  {task.completed ? <CheckCircle className="w-6 h-6 text-indigo-600" /> : <Circle className="w-6 h-6 text-pink-500 hover:text-pink-700" />}
-                </button>
-                <div className="flex-1">
-                  <div className="flex justify-between items-baseline mb-2">
-                    <h3 className={`text-xl font-semibold ${task.completed ? 'line-through text-purple-400' : 'text-purple-900'}`}>{task.title}</h3>
-                    <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-0.5 rounded-full">{task.time}</span>
+        <main className="space-y-8">
+          {/* Pending Tasks */}
+          {visibleTasks.length > 0 && (
+            <section>
+              <h2 className="text-2xl font-semibold text-purple-800 mb-4">Oczekujące zadania</h2>
+              <div className="space-y-6">
+                {visibleTasks.map((task, idx) => (
+                  <div
+                    key={task.id}
+                    className="bg-white rounded-2xl shadow-lg p-6 flex gap-4 items-start transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fadeIn"
+                    style={{ animationDelay: `${idx * 150}ms` }}
+                  >
+                    <button onClick={() => toggle(task.id)} className="mt-1">
+                      <Circle className="w-6 h-6 text-pink-500 hover:text-pink-700" />
+                    </button>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="text-xl font-semibold text-purple-900">{task.title}</h3>
+                        <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-0.5 rounded-full">{task.time}</span>
+                      </div>
+                      <p className="text-purple-700">{task.description}</p>
+                    </div>
                   </div>
-                  <p className={`${task.completed ? 'line-through text-purple-400' : 'text-purple-700'}`}>{task.description}</p>
-                </div>
+                ))}
               </div>
-            ))
+            </section>
+          )}
+
+          {/* Completed Tasks */}
+          {completedTasks.length > 0 && (
+            <section>
+              <h2 className="text-2xl font-semibold text-purple-800 mb-4">Zrealizowane zadania</h2>
+              <div className="space-y-6">
+                {completedTasks.map((task, idx) => (
+                  <div
+                    key={task.id}
+                    className="bg-white/80 rounded-2xl shadow-inner p-6 flex gap-4 items-start opacity-75 grayscale animate-fadeIn"
+                    style={{ animationDelay: `${idx * 150}ms` }}
+                  >
+                    <button onClick={() => toggle(task.id)} className="mt-1">
+                      <CheckCircle className="w-6 h-6 text-green-500 hover:text-green-700" />
+                    </button>
+                    <div className="flex-1">
+                      <div className="flex justify-between items-baseline mb-2">
+                        <h3 className="text-xl font-semibold text-gray-500 line-through">{task.title}</h3>
+                        <span className="text-sm font-medium bg-green-100 text-green-700 px-3 py-0.5 rounded-full">{task.time}</span>
+                      </div>
+                      <p className="text-gray-500 line-through">{task.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </section>
           )}
         </main>
       </div>
@@ -138,6 +153,9 @@ export default function App() {
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
         }
       `}</style>
     </div>

@@ -12,14 +12,72 @@ interface Task {
 
 
 const initialTasks: Task[] = [
-  { id: 1, title: 'Poranna kawa', description: 'Czas na pierwszą kawę dnia i sprawdzenie wiadomości', time: '00:00', completed: false, visible: false },
-  { id: 2, title: 'Przegląd emaili', description: 'Sprawdzenie i odpowiedź na ważne emaile', time: '01:00', completed: false, visible: false },
-  { id: 3, title: 'Spotkanie zespołu', description: 'Cotygodniowe spotkanie z zespołem projektowym', time: '01:30', completed: false, visible: false },
-  { id: 4, title: 'Przerwa na lunch', description: 'Czas na zdrowy posiłek i krótki spacer', time: '02:00', completed: false, visible: false },
-  { id: 5, title: 'Praca nad projektem', description: 'Kontynuacja pracy nad głównym projektem', time: '02:10', completed: false, visible: false },
-  { id: 6, title: 'Przegląd dnia', description: 'Podsumowanie wykonanych zadań i planowanie na jutro', time: '17:00', completed: false, visible: false },
-  { id: 7, title: 'Czas na relaks', description: 'Moment na odpoczynek i hobby', time: '19:00', completed: false, visible: false },
+  {
+    id: 1,
+    title: '🔡 Wprowadzenie',
+    description: 'Każda księżniczka musi znać zasady panujące w jej królestwie. Dokładnie zapoznaj się z treścią regulaminu i zaakceptuj go.',
+    time: '09:00',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 2,
+    title: '🥗 Zaspokój swój głód I',
+    description: 'Nawet najlepszym księżniczkom trudno świecić blaskiem z pustym żołądkiem. Czeka Cię coś pysznego w miłym towarzystwie. Przygotuj się do wyjścia z domu i pamiętaj, że możesz spędzić poza domem niemal cały dzień.',
+    time: '10:00',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 3,
+    title: '👑 Poczuj się jak księżniczka I',
+    description: 'Piękna fryzura to podstawa, by wzbudzać zachwyt. Wybierz dowolną stylizację włosów, a twój nadworny stylista posttara się spełnić twoje oczekiwania. O 11:30 zgłoś się do DM Studio przy ul. Andriolliego 40 i zapytaj o Małgosię.',
+    time: '11:30',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 4,
+    title: '☕ Przerwa na lunch',
+    description: 'Każda księżniczka zasługuje na chwilę wytchnienia po ciężkiej pracy. O wyznaczonej godzinie zaczekaj pod salonem stylisty. Podjedzie pod Ciebie karoca, wiec złap oddech i posil się przed kolejnymi wyzwaniami.',
+    time: '13:00',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 5,
+    title: '👑 Poczuj się jak księżniczka II',
+    description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu w niej pozostać.',
+    time: '14:30',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 6,
+    title: '👑 Poczuj się jak księżniczka III',
+    description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję zdjęciową, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania: [TU WPISZ ADRES]. Nie spóźnij się!',
+    time: '17:00',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 7,
+    title: '🥗 Zaspokój swój głód II',
+    description: 'Kończy się inicjacja księżniczki - czas na królewską ucztę. Jak wiadomo każda księżniczka potrzebuje swojego księcia z bajki. Przygotuj się na jego przybycie.',
+    time: '18:30',
+    completed: false,
+    visible: false
+  },
+  {
+    id: 8,
+    title: '❤️ Nagroda',
+    description: 'Gratulacje! Przeszłaś samą siebie. Teraz czas zabłysnąć przed poddanymi i wyprawić przyjęcie ku własnej czci.',
+    time: '20:30',
+    completed: false,
+    visible: false
+  },
 ];
+
 
 const getCurrentTime = (): string => new Date().toTimeString().slice(0, 5);
 
@@ -33,6 +91,7 @@ export default function App() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [currentTime, setCurrentTime] = useState<string>(getCurrentTime());
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [regulationsAccepted, setRegulationsAccepted] = useState(false);
 
   // Check first visit
   useEffect(() => {
@@ -66,6 +125,7 @@ export default function App() {
   };
 
   const handleStart = () => {
+    if (!regulationsAccepted) return;
     localStorage.setItem('hasVisited', 'true');
     setShowModal(false);
   };
@@ -79,22 +139,70 @@ export default function App() {
   return (
     <div className="relative min-h-screen bg-gradient-to-tr from-indigo-200 via-purple-200 to-pink-200 p-6">
       {/* Welcome Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-2xl p-8 max-w-sm text-center shadow-lg">
-            <h2 className="text-2xl font-bold text-purple-800 mb-4">Witamy!</h2>
-            <p className="text-purple-700 mb-6">WIADOMOSC WSTEPNE. Zaczynamy?</p>
+            {showModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center overflow-y-auto z-50 pt-10">
+    <div className="bg-white rounded-2xl p-8 max-w-md w-full max-h-[80vh] overflow-y-auto text-left shadow-xl">
+      <h2 className="text-2xl font-bold text-purple-800 mb-4 text-center">
+        Regulamin Uczestnictwa
+      </h2>
+      <div className="text-black text-sm mb-4 space-y-3">
+              <p className="font-semibold">&sect;1. Postanowienia Ogólne</p>
+              <ul className="list-decimal list-inside ml-4 space-y-1">
+                <li>Uczestnik zobowiązuje się do dobrej zabawy bez względu na okoliczności.</li>
+                <li>Wszelkie zmartwienia zostają zawieszone na czas trwania zabawy.</li>
+              </ul>
+              <p className="font-semibold">&sect;2. Zasady Wykonywania Zadań</p>
+              <ul className="list-decimal list-inside ml-4 space-y-1">
+                <li>Lista zadań widoczna jest na głownym ekranie.</li>
+                <li>Szczegółowe opisy zadań będą pojawiały się kolejno wraz z upływem czasu zabawy.</li>
+                <li>Uczestnik zobowiązuje się do dokładnego zapoznania się z treścią każdego nowego zadania.</li>
+                <li>Uczestnik zobowiązuje się do wykonania wszystkich zaplanowanych zadań bez wyjątku nie łamiąc przy tym zasad zawartych w &sect;1.</li>
+              </ul>
+              <p className="font-semibold">&sect;3. Etapy Zabawy</p>
+              <ul className="list-decimal list-inside ml-4 space-y-1">
+                <li>Zabawa rozpoczyna się o godzinie 9:00.</li>
+                <li>Uczestnik poprzez aplikację realizuje wyznaczone mu zadania.</li>
+                <li>Zabawa kończy się o godzinie 20:00.</li>
+                <li>Po prawidłowym wykonaniu wszystkich zadań uczestnik zostanie nagrodzony.</li>
+              </ul>
+              <p className="font-semibold">&sect;4. Wymagania</p>
+              <ul className="list-decimal list-inside ml-4 space-y-1">
+                <li>Uczestnik zobowiązuje się do posiadania przy sobie telefonu komórkowego na czas trwania zabawy na którym będzie odchaczał wykonane zadania oraz otrzymywał powiadomienia o nowych zadaniach.</li>
+                <li>Uczestnik zobowiązuje się do posiadania przy sobie wizytówki dostarczonej w kopercie. Może być przydatna do ponownego powrotu na stronę.</li>
+                <li>Uczestnik napotkając jakiekolwiek trudności podczas trwania całej zabawy zobowiązuje się do niezwłocznego powiadomienia organizatora o zaistniałym problemie za pomocą wiadomosci SMS pod numer wskazany na wizytówce.</li>
+              </ul>
+              <p className="font-semibold">&sect;5. Oświadczenie</p>
+              <ul className="list-decimal list-inside ml-4 space-y-1">
+                <li>Uczestnik potwierdza, że roumie humorystyczny zamysł niniejszego regulaminu.</li>
+                <li>Uczestnik potwierdza, że rozumie iż niniejszy regulamin jest wyświetlany jednorazowo</li>
+                <li>Uczestnik potwierdza wykoanie screenów niniejszego regulaminu, w celu uzyskania możliwości powrotu do jego treści w galerii telefonu.</li>
+              </ul>
+            </div>
+            <label className="flex items-center gap-3 text-sm text-black mb-6">
+              <input
+                type="checkbox"
+                checked={regulationsAccepted}
+                onChange={e => setRegulationsAccepted(e.target.checked)}
+                className="w-5 h-5 text-green-600 border-2 border-gray-300 rounded-md focus:ring-green-500 focus:outline-none"
+              />
+              Zapoznałem(-am) się z regulaminem i akceptuję jego warunki
+            </label>
             <button
               onClick={handleStart}
-              className="inline-flex items-center gap-2 border-2 border-green-500 rounded-full px-6 py-2 hover:bg-green-50 transition"
+              disabled={!regulationsAccepted}
+              className={`inline-flex items-center gap-2 border-2 rounded-full px-6 py-2 transition w-full justify-center ${
+                regulationsAccepted
+                  ? 'border-green-500 hover:bg-green-50 text-green-600 font-semibold'
+                  : 'border-gray-300 text-gray-400 cursor-not-allowed'
+              }`}
             >
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span className="text-green-600 font-semibold">Zaczynamy</span>
+              <CheckCircle className={`w-5 h-5 ${regulationsAccepted ? 'text-green-500' : 'text-gray-400'}`} />
+              Zaczynamy
             </button>
           </div>
         </div>
       )}
-
+      
       <div className="max-w-3xl mx-auto">
         <header className="mb-8">
           <div className="bg-white/90 backdrop-blur-lg rounded-3xl shadow-2xl py-6 px-8 flex justify-between items-center border border-purple-300">

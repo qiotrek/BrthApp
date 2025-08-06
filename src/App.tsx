@@ -107,7 +107,7 @@ const initialTasks: Task[] = [
 
 
 const getTimeUntilBirthday = () => {
-  const target = new Date(brthDay + 'T00:00:00');
+  const target = new Date(brthDay + 'T07:00:00');
   const now = new Date();
   const diff = target.getTime() - now.getTime();
   if (diff <= 0) return '00:00:00';
@@ -136,7 +136,7 @@ export default function App() {
   // Check first visit
   useEffect(() => {
     const visited = localStorage.getItem('hasVisited');
-    if (visited!== 'true') {
+    if (visited!== 'true' && isBirthdayToday()) {
       setShowModal(true);
     }
     const saved = localStorage.getItem('completedTasks');
@@ -212,15 +212,14 @@ const toggle = (id: number) => {
   const totalVisible = uncompletedTasks.length + completedTasks.length;
   const percent = totalVisible ? (completedCount / totalVisible) * 100 : 0;
 
-  const isBirthdayToday = (): boolean => {
-    const today = new Date();
-    const [year, month, day] = brthDay.split('-').map(Number);
-    return (
-      today.getFullYear() === year &&
-      today.getMonth() === month - 1 &&
-      today.getDate() === day
-    );
-  };
+const isBirthdayToday = (): boolean => {
+  const now = new Date();
+  const [year, month, day] = brthDay.split('-').map(Number);
+
+  const birthdayDate = new Date(year, month - 1, day, 7, 0, 0); 
+
+  return now >= birthdayDate;
+};
 
   return (
 

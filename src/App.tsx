@@ -6,8 +6,11 @@ interface Task {
   title: string;
   description: string;
   time: string; // HH:MM format
+  descTime:string; // HH:MM format
   completed: boolean;
   visible: boolean;
+  visibleDesc: boolean;
+  canBeFinished: boolean;
 }
 
 
@@ -17,64 +20,88 @@ const initialTasks: Task[] = [
     title: '🔡 Wprowadzenie',
     description: 'Każda księżniczka musi znać zasady panujące w jej królestwie. Dokładnie zapoznaj się z treścią regulaminu i zaakceptuj go.',
     time: '09:00',
+    descTime: '01:00',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 2,
     title: '🥗 Zaspokój swój głód I',
     description: 'Nawet najlepszym księżniczkom trudno świecić blaskiem z pustym żołądkiem. Czeka Cię coś pysznego w miłym towarzystwie. Przygotuj się do wyjścia z domu i pamiętaj, że możesz spędzić poza domem niemal cały dzień.',
     time: '10:00',
+    descTime: '01:25',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 3,
     title: '👑 Poczuj się jak księżniczka I',
     description: 'Piękna fryzura to podstawa, by wzbudzać zachwyt. Wybierz dowolną stylizację włosów, a twój nadworny stylista posttara się spełnić twoje oczekiwania. O 11:30 zgłoś się do DM Studio przy ul. Andriolliego 40 i zapytaj o Małgosię.',
     time: '11:30',
+    descTime: '01:51',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 4,
     title: '☕ Przerwa na lunch',
     description: 'Każda księżniczka zasługuje na chwilę wytchnienia po ciężkiej pracy. O wyznaczonej godzinie zaczekaj pod salonem stylisty. Podjedzie pod Ciebie karoca, wiec złap oddech i posil się przed kolejnymi wyzwaniami.',
     time: '13:00',
+    descTime: '12:30',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 5,
     title: '👑 Poczuj się jak księżniczka II',
     description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu w niej pozostać.',
     time: '14:30',
+    descTime: '14:00',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 6,
     title: '👑 Poczuj się jak księżniczka III',
     description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję zdjęciową, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania: [TU WPISZ ADRES]. Nie spóźnij się!',
     time: '17:00',
+    descTime: '16:30',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 7,
     title: '🥗 Zaspokój swój głód II',
     description: 'Kończy się inicjacja księżniczki - czas na królewską ucztę. Jak wiadomo każda księżniczka potrzebuje swojego księcia z bajki. Przygotuj się na jego przybycie.',
     time: '18:30',
+    descTime: '18:00',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
   {
     id: 8,
     title: '❤️ Nagroda',
     description: 'Gratulacje! Przeszłaś samą siebie. Teraz czas zabłysnąć przed poddanymi i wyprawić przyjęcie ku własnej czci.',
     time: '20:30',
+    descTime: '20:30',
     completed: false,
-    visible: false
+    visible: true,
+    visibleDesc: false,
+    canBeFinished: false
   },
 ];
 
@@ -101,7 +128,7 @@ export default function App() {
     }
     const saved = localStorage.getItem('completedTasks');
     const completedIds: number[] = saved ? JSON.parse(saved) : [];
-    setTasks(initialTasks.map(t => ({ ...t, completed: completedIds.includes(t.id), visible: false })));
+    setTasks(initialTasks.map(t => ({ ...t, completed: completedIds.includes(t.id) })));
   }, []);
 
   // Update time and visibility
@@ -109,20 +136,47 @@ export default function App() {
     const update = () => {
       const now = getCurrentTime();
       setCurrentTime(now);
-      setTasks(prev => prev.map(t => ({ ...t, visible: isVisible(t.time, now) })));
+      setTasks(prev => prev.map(t => ({ ...t, visibleDesc: isVisible(t.descTime, now) })));
+      setTasks(prev => prev.map(t => ({ ...t,  canBeFinished: canBeFinished(t) })));
     };
     update();
     const timer = setInterval(update, 60000);
     return () => clearInterval(timer);
   }, []);
 
-  const toggle = (id: number) => {
-    setTasks(prev => {
-      const updated = prev.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
-      localStorage.setItem('completedTasks', JSON.stringify(updated.filter(t => t.completed).map(t => t.id)));
-      return updated;
-    });
+  const canBeFinished = (task: Task): boolean => {
+    let completedTasks=localStorage.getItem('completedTasks');
+    const completedIds: number[] = completedTasks ? JSON.parse(completedTasks) : [];
+    if(completedIds.includes(task.id)) {
+      return true;
+    }
+    else if((completedIds.includes(task.id-1) || task.id==1) && task.visibleDesc) {
+      return true;
+    }
+    else{
+      return false;
+    }
   };
+
+const toggle = (id: number) => {
+  setTasks(prev => {
+    const updated = prev.map(t => {
+      const isTarget = t.id === id && t.canBeFinished;
+      const completed = isTarget ? !t.completed : t.completed;
+      return { ...t, completed };
+    }).map(t => ({
+      ...t,
+      canBeFinished: canBeFinished(t)
+    }));
+
+    localStorage.setItem(
+      'completedTasks',
+      JSON.stringify(updated.filter(t => t.completed).map(t => t.id))
+    );
+
+    return updated;
+  });
+};
 
   const handleStart = () => {
     if (!regulationsAccepted) return;
@@ -130,10 +184,10 @@ export default function App() {
     setShowModal(false);
   };
 
-  const visibleTasks = tasks.filter(t => t.visible && !t.completed);
+  const uncompletedTasks = tasks.filter(t => t.visible && !t.completed);
   const completedTasks = tasks.filter(t => t.visible && t.completed);
   const completedCount = completedTasks.length;
-  const totalVisible = visibleTasks.length + completedTasks.length;
+  const totalVisible = uncompletedTasks.length + completedTasks.length;
   const percent = totalVisible ? (completedCount / totalVisible) * 100 : 0;
 
   return (
@@ -217,7 +271,7 @@ export default function App() {
             </div>
           </div>
           <div className="mt-6 flex items-center gap-6 text-purple-700">
-            <span>Oczekujące: <strong className="text-pink-600">{visibleTasks.length}</strong></span>
+            <span>Oczekujące: <strong className="text-pink-600">{uncompletedTasks.length}</strong></span>
             <span>Ukończone: <strong className="text-indigo-600">{completedCount}</strong></span>
             <div className="flex-1">
               <div className="w-full bg-pink-100 rounded-full h-3 overflow-hidden">
@@ -232,25 +286,31 @@ export default function App() {
 
         <main className="space-y-8">
           {/* Pending Tasks */}
-          {visibleTasks.length > 0 && (
+          {uncompletedTasks.length > 0 && (
             <section>
               <h2 className="text-2xl font-semibold text-purple-800 mb-4">Oczekujące zadania</h2>
               <div className="space-y-6">
-                {visibleTasks.map((task, idx) => (
+                {uncompletedTasks.map((task, idx) => (
                   <div
                     key={task.id}
                     className="bg-white rounded-2xl shadow-lg p-6 flex gap-4 items-start transition-transform duration-300 hover:-translate-y-1 hover:shadow-2xl animate-fadeIn"
                     style={{ animationDelay: `${idx * 150}ms` }}
                   >
                     <button onClick={() => toggle(task.id)} className="mt-1">
-                      <Circle className="w-6 h-6 text-pink-500 hover:text-pink-700" />
+                      {task.canBeFinished ? (
+                        <Circle className="w-6 h-6 text-pink-500 hover:text-pink-700" />
+                      ) : (
+                        <Circle className="w-6 h-6 text-gray-500 " />
+                      )}
                     </button>
                     <div className="flex-1">
                       <div className="flex justify-between items-baseline mb-2">
                         <h3 className="text-xl font-semibold text-purple-900">{task.title}</h3>
                         <span className="text-sm font-medium bg-indigo-100 text-indigo-700 px-3 py-0.5 rounded-full">{task.time}</span>
                       </div>
-                      <p className="text-purple-700">{task.description}</p>
+                      {task.visibleDesc && (
+                        <p className="text-purple-700">{task.description}</p>
+                      )}
                     </div>
                   </div>
                 ))}

@@ -136,7 +136,7 @@ export default function App() {
   // Check first visit
   useEffect(() => {
     const visited = localStorage.getItem('hasVisited');
-    if (visited!== 'true') {
+    if (visited!== 'true' && isBirthdayToday()) {
       setShowModal(true);
     }
     const saved = localStorage.getItem('completedTasks');

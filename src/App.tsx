@@ -13,14 +13,14 @@ interface Task {
   canBeFinished: boolean;
 }
 
-const brthDay = '2025-08-06';
+const brthDay = '2025-08-09';
 const initialTasks: Task[] = [
   {
     id: 1,
     title: '🔡 Wprowadzenie',
     description: 'Każda księżniczka musi znać zasady panujące w jej królestwie. Dokładnie zapoznaj się z treścią regulaminu i zaakceptuj go.',
     time: '09:00',
-    descTime: '01:00',
+    descTime: '09:00',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -31,7 +31,7 @@ const initialTasks: Task[] = [
     title: '🥗 Zaspokój swój głód I',
     description: 'Nawet najlepszym księżniczkom trudno świecić blaskiem z pustym żołądkiem. Czeka Cię coś pysznego w miłym towarzystwie. Przygotuj się do wyjścia z domu i pamiętaj, że możesz spędzić poza domem niemal cały dzień.',
     time: '10:00',
-    descTime: '01:25',
+    descTime: '09:10',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -42,7 +42,7 @@ const initialTasks: Task[] = [
     title: '👑 Poczuj się jak księżniczka I',
     description: 'Piękna fryzura to podstawa, by wzbudzać zachwyt. Wybierz dowolną stylizację włosów, a twój nadworny stylista posttara się spełnić twoje oczekiwania. O 11:30 zgłoś się do DM Studio przy ul. Andriolliego 40 i zapytaj o Małgosię.',
     time: '11:30',
-    descTime: '01:51',
+    descTime: '10:45',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -62,9 +62,9 @@ const initialTasks: Task[] = [
   {
     id: 5,
     title: '👑 Poczuj się jak księżniczka II',
-    description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu w niej pozostać.',
+    description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu ją na siebie nałożyć.',
     time: '14:30',
-    descTime: '14:00',
+    descTime: '13:45',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -75,7 +75,7 @@ const initialTasks: Task[] = [
     title: '👑 Poczuj się jak księżniczka III',
     description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję zdjęciową, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania: [TU WPISZ ADRES]. Nie spóźnij się!',
     time: '17:00',
-    descTime: '16:30',
+    descTime: '16:15',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -96,10 +96,10 @@ const initialTasks: Task[] = [
     id: 8,
     title: '❤️ Nagroda',
     description: 'Gratulacje! Przeszłaś samą siebie. Teraz czas zabłysnąć przed poddanymi i wyprawić przyjęcie ku własnej czci.',
-    time: '20:30',
-    descTime: '20:30',
+    time: '20:00',
+    descTime: '20:00',
     completed: false,
-    visible: true,
+    visible: false,
     visibleDesc: false,
     canBeFinished: false
   },
@@ -119,6 +119,14 @@ const getTimeUntilBirthday = () => {
 };
 
 const getCurrentTime = (): string => new Date().toTimeString().slice(0, 5);
+
+const isTaskVisible = (task: Task, currentTime: string): boolean => {
+  if (!task.visible) {
+    return isVisible(task.time, currentTime);
+  } else {
+    return true;
+  }
+};
 
 const isVisible = (taskTime: string, currentTime: string): boolean => {
   const [h1, m1] = taskTime.split(':').map(Number);
@@ -158,7 +166,7 @@ export default function App() {
     const update = () => {
       const now = getCurrentTime();
       setCurrentTime(now);
-      setTasks(prev => prev.map(t => ({ ...t, visibleDesc: isVisible(t.descTime, now) })));
+      setTasks(prev => prev.map(t => ({ ...t,  visible: isTaskVisible(t, now),  visibleDesc: isVisible(t.descTime, now) })));
       setTasks(prev => prev.map(t => ({ ...t,  canBeFinished: canBeFinished(t) })));
     };
     update();

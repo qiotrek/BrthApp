@@ -13,7 +13,7 @@ interface Task {
   canBeFinished: boolean;
 }
 
-const brthDay = '2025-08-13';
+const brthDay = '2025-08-14';
 const initialTasks: Task[] = [
   {
     id: 1,

@@ -13,12 +13,12 @@ interface Task {
   canBeFinished: boolean;
 }
 
-const brthDay = '2025-08-13';
+const brthDay = '2025-08-14';
 const initialTasks: Task[] = [
   {
     id: 1,
     title: '🔡 Wprowadzenie',
-    description: 'Każda księżniczka musi znać zasady panujące w jej królestwie. Dokładnie zapoznaj się z treścią regulaminu i zaakceptuj go.',
+    description: 'Dzień dobry śpiąca księżniczko i Wszystkiego najlepszego. Na potrzebę dzisiejszej zabawy wcielisz się w rolę jednej z dworskich dam. Każda księżniczka musi znać zasady panujące w jej królestwie. Dokładnie zapoznaj się z treścią regulaminu i zaakceptuj go.',
     time: '09:00',
     descTime: '09:00',
     completed: false,
@@ -29,7 +29,7 @@ const initialTasks: Task[] = [
   {
     id: 2,
     title: '🥗 Zaspokój swój głód I',
-    description: 'Nawet najlepszym księżniczkom trudno świecić blaskiem z pustym żołądkiem. Czeka Cię coś pysznego w miłym towarzystwie. Przygotuj się do wyjścia z domu i pamiętaj, że możesz spędzić poza domem niemal cały dzień.',
+    description: 'Nawet najlepszym księżniczkom trudno świecić blaskiem z pustym żołądkiem. Czeka Cię coś pysznego w miłym towarzystwie. Przygotuj się do wyjścia z domu i pamiętaj, że możesz spędzić poza nim niemal cały dzień. Zabierz ze sobą kilka przedmiotów które pomogą Ci utzymać piękny wygląd w późniejszych godzinach.',
     time: '10:00',
     descTime: '09:10',
     completed: false,
@@ -40,7 +40,7 @@ const initialTasks: Task[] = [
   {
     id: 3,
     title: '👑 Poczuj się jak księżniczka I',
-    description: 'Piękna fryzura to podstawa, by wzbudzać zachwyt. Wybierz dowolną stylizację włosów, a twój nadworny stylista posttara się spełnić twoje oczekiwania. O 11:30 zgłoś się do DM Studio przy ul. Andriolliego 40 i zapytaj o Małgosię.',
+    description: 'Piękna fryzura to podstawa, by wzbudzać zachwyt. Wybierz dowolną stylizację włosów, a twój nadworny stylista postara się spełnić twoje oczekiwania. O 11:30 zgłoś się do DM Studio przy ul. Andriolliego 40 i zapytaj o Małgosię.',
     time: '11:30',
     descTime: '10:45',
     completed: false,
@@ -64,7 +64,7 @@ const initialTasks: Task[] = [
     title: '👑 Poczuj się jak księżniczka II',
     description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu ją na siebie nałożyć.',
     time: '14:30',
-    descTime: '13:45',
+    descTime: '14:30',
     completed: false,
     visible: true,
     visibleDesc: false,
@@ -73,7 +73,7 @@ const initialTasks: Task[] = [
   {
     id: 6,
     title: '👑 Poczuj się jak księżniczka III',
-    description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję zdjęciową, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania: [TU WPISZ ADRES]. Nie spóźnij się!',
+    description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania z nadwornym malarzem: Studio Chmury, Hoża 51 Warszawa. Wydobadź z siebie piękno!',
     time: '17:00',
     descTime: '16:15',
     completed: false,
@@ -96,8 +96,8 @@ const initialTasks: Task[] = [
     id: 8,
     title: '❤️ Nagroda',
     description: 'Gratulacje! Przeszłaś samą siebie. Teraz czas zabłysnąć przed poddanymi i wyprawić przyjęcie ku własnej czci.',
-    time: '20:00',
-    descTime: '20:00',
+    time: '20:30',
+    descTime: '20:20',
     completed: false,
     visible: false,
     visibleDesc: false,

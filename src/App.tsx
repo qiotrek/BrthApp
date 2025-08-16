@@ -73,7 +73,7 @@ const initialTasks: Task[] = [
   {
     id: 6,
     title: '👑 Poczuj się jak księżniczka III',
-    description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania z nadwornym malarzem: Studio Chmury, Hoża 51 Warszawa. Wydobadź z siebie piękno!',
+    description: 'Oszałamiająca fryzura i wyjątkowa suknia zasługują na uwiecznienie. Przygotuj się na sesję, która podkreśli twoje wewnętrzne piękno. Miejsce spotkania z nadwornym malarzem: Studio Chmury, Hoża 51 Warszawa. Wydobadź z siebie piękno! I nie martw się makijażem, ani niczym innym. Będzie czas i miejsce na wszystkie potrzebne poprawki zanim uwiecznimy Twoje piękno! Zachowaj uśmiech',
     time: '17:00',
     descTime: '16:15',
     completed: false,

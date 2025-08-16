@@ -64,7 +64,7 @@ const initialTasks: Task[] = [
     title: '👑 Poczuj się jak księżniczka II',
     description: 'Nadworny doradca czeka, by pomóc wybrać suknię godną królewskiej postaci - efektowną, a zarazem wygodną. Możesz zabrać ją ze sobą lub od razu ją na siebie nałożyć.',
     time: '14:30',
-    descTime: '14:30',
+    descTime: '14:00',
     completed: false,
     visible: true,
     visibleDesc: false,
